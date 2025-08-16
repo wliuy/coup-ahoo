@@ -41,17 +41,6 @@ export class Dude extends Entity {
     public getRoleDescription(): string {
         switch (this.crewRole) {
             case 'cannoneer':
-                return 'He will allow you to make up to two shots every turn...';
-            case 'quartermaster':
-                return 'He will repair random cargo when you roll a blank...';
-            case 'navigator':
-                return 'He will allow you to reroll an extra time...';
-        }
-    }
-
-    public getRoleDescription(): string {
-        switch (this.crewRole) {
-            case 'cannoneer':
                 return '炮手：每回合允许你额外攻击一次。';
             case 'quartermaster':
                 return '舵手：当你投出空白骰子时，他会帮你修复随机货物。';
