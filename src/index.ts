@@ -6,6 +6,14 @@ import { Scene } from './scene';
 export const WIDTH = 800;
 export const HEIGHT = 400;
 
+// **第1步：在这里动态加载字体**
+const fontLink = document.createElement('link');
+fontLink.href = 'https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap';
+fontLink.rel = 'stylesheet';
+document.head.appendChild(fontLink);
+// **字体加载代码结束**
+
+
 const canvas: HTMLCanvasElement = document.createElement('canvas');
 const ctx: CanvasRenderingContext2D = canvas.getContext('2d');
 const mouse: Mouse = { x: 0, y: 0 };
@@ -54,17 +62,20 @@ document.onmousedown = () => {
     game.click(mouse);
 };
 
-// ** 仅保留触摸全屏的逻辑 **
 canvas.addEventListener('touchend', () => {
     if (game) {
         game.goFullScreen();
     }
 });
-// ** 结束 **
 
 const tick = (t: number) => {
     requestAnimationFrame(tick);
     ctx.resetTransform();
+
+    // **第2步：在这里将字体应用到游戏画布**
+    ctx.font = `20px 'ZCOOL KuaiLe', sans-serif`; // 设置一个默认字体
+    // **应用字体代码结束**
+
     game.update(t, mouse);
     game.draw(ctx);
 };
