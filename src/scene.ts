@@ -86,7 +86,8 @@ export class Scene extends Container {
 
         game.onKey((e) => {
             if (e.key == 'm') this.game.audio.toggleMute();
-            if (e.key == 'f') this.game.goFullScreen(); // Keep 'f' key for desktop fullscreen
+            // We handle fullscreen in index.ts now
+            // if (e.key == 'f') this.game.goFullScreen(); 
         });
     }
 
@@ -326,7 +327,7 @@ export class Scene extends Container {
         this.cam.shift = 0;
         this.cam.pan.y = -25;
         this.ship.sail();
-        this.ship.openMouth();
+        this.ship.openMmouth();
         this.action.setText('');
         this.action.visible = false;
         this.loot.forEach(l => l.allowPick(false));
@@ -461,7 +462,7 @@ export class Scene extends Container {
     }
 
     private thank(): void {
-        this.enemy.openMouth();
+        this.enemy.openMmouth();
         this.info('一切就绪，你可以出发了！', '愿它能为你指引正确的航向...');
         setTimeout(() => this.npcLeave(), 500);
     }
@@ -562,7 +563,7 @@ export class Scene extends Container {
                 this.loot.forEach(l => l.allowPick(false));
                 looted.float(false);
                 looted.move(offset(this.ship.getDicePos(this.ship.getDiceCount()), this.ship.p.x, this.ship.p.y), () => this.ship.addDice(looted));
-                this.ship.openMouth();
+                this.ship.openMmouth();
                 setTimeout(() => {
                     this.loot = this.loot.filter(l => l != looted);
                     this.promptSail();
