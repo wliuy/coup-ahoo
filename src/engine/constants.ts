@@ -1,1 +1,1 @@
-export const font = 'Arial Black,HelveticaNeue-CondensedBlack,arial,sans-serif';
+export const font = `'ZCOOL KuaiLe', sans-serif`;
