@@ -29,6 +29,19 @@ export class Game extends Entity {
     public onKey(callback: (event: KeyboardEvent) => void): void {
         this.keyListeners = [callback];
     }
+    
+    public goFullScreen(): void {
+        const el = this.canvas as any;
+        if (el.requestFullscreen) {
+            el.requestFullscreen();
+        } else if (el.mozRequestFullScreen) { /* Firefox */
+            el.mozRequestFullScreen();
+        } else if (el.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+            el.webkitRequestFullscreen();
+        } else if (el.msRequestFullscreen) { /* IE/Edge */
+            el.msRequestFullscreen();
+        }
+    }
 
     public pressed(event: KeyboardEvent): void {
         if (event.repeat) return;
