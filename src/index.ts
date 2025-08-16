@@ -54,19 +54,13 @@ document.onmousedown = () => {
     game.click(mouse);
 };
 
-// ** 新增的全屏逻辑 **
-canvas.addEventListener('click', () => {
-    if (game) {
-        game.goFullScreen();
-    }
-});
-
+// ** 仅保留触摸全屏的逻辑 **
 canvas.addEventListener('touchend', () => {
     if (game) {
         game.goFullScreen();
     }
 });
-// ** 新增的全屏逻辑结束 **
+// ** 结束 **
 
 const tick = (t: number) => {
     requestAnimationFrame(tick);
