@@ -57,10 +57,18 @@ export class Scene extends Container {
         this.secondLine = new WobblyText(game, '', 25, 400, 105, 0.2, 3, { shadow: 3, align: 'center', scales: true });
         this.bigText = new WobblyText(game, '~ 阿胡起义 ~', 80, 400, 150, 0.2, 3, { shadow: 6, align: 'center', scales: true });
         
-        // ** 在这里修改按钮的字体大小 (最后一个数字从20改为30) **
-        this.action = new ButtonEntity(game, '投骰', 800 - 100 - 10, 360, 200, 55, () => this.buttonPress(), game.audio, 30);
-        this.yesButton = new ButtonEntity(game, '', 800 - 70 - 10, 360, 140, 55, () => this.answer(true), game.audio, 30);
-        this.noButton = new ButtonEntity(game, '', 800 - 70 * 3 - 10 * 2, 360, 140, 55, () => this.answer(false), game.audio, 30);
+        // ** 在这里修改按钮的尺寸和位置 **
+        const btnWidth = 160;
+        const btnHeight = 45;
+        const btnFontSize = 24;
+        const btnMargin = 10;
+        const btnBottom = 450 - btnHeight * 0.5 - btnMargin;
+
+        this.action = new ButtonEntity(game, '投骰', 800 - btnWidth * 0.5 - btnMargin, btnBottom, btnWidth, btnHeight, () => this.buttonPress(), game.audio, btnFontSize);
+        
+        const smallBtnWidth = 110;
+        this.yesButton = new ButtonEntity(game, '', 800 - smallBtnWidth * 0.5 - btnMargin, btnBottom, smallBtnWidth, btnHeight, () => this.answer(true), game.audio, btnFontSize);
+        this.noButton = new ButtonEntity(game, '', 800 - smallBtnWidth * 1.5 - btnMargin * 2, btnBottom, smallBtnWidth, btnHeight, () => this.answer(false), game.audio, btnFontSize);
 
         this.yesButton.visible = false;
         this.noButton.visible = false;
