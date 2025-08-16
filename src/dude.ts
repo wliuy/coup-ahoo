@@ -49,17 +49,14 @@ export class Dude extends Entity {
         }
     }
 
-    public setRolePosition(): void {
+    public getRoleDescription(): string {
         switch (this.crewRole) {
             case 'cannoneer':
-                this.p = { x: 170, y: -170 };
-                break;
+                return '炮手：每回合允许你额外攻击一次。';
             case 'quartermaster':
-                this.p = { x: -80, y: -100 };
-                break;
+                return '舵手：当你投出空白骰子时，他会帮你修复随机货物。';
             case 'navigator':
-                this.p = { x: 0, y: -400 };
-                break;
+                return '领航员：每回合允许你额外重投一次骰子。';
         }
     }
 
