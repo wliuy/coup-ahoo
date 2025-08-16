@@ -2,21 +2,18 @@
 
 > 一款扮演叛变船长、挑战船员、征服大海的骰子冒险游戏。
 
-![游戏截图](https://user-images.githubusercontent.com/1301397/65502690-34a36f00-de94-11e9-9154-186e927c6d48.png)
+![游戏截图](https://tc.yang.pp.ua/file/Blog/ahoo.png)
 
 ## 一键部署到 Cloudflare Pages
 
 通过以下三个简单的步骤，即可将此游戏部署到您自己的免费网站上。
 
-### 第 1 步：开始部署
+### 第 1 步：Fork本项目
 
-点击下面的按钮，它会带您进入 **Cloudflare Pages** 的正确创建流程，并尝试预填您的项目信息：
-
-[![部署到 Cloudflare Pages](https://static.cloudflareinsights.com/pages/media/pages-button.svg)](https://dash.cloudflare.com/pages/new/wliuy/coup-ahoo)
 
 ### 第 2 步：配置构建
 
-在设置页面，Cloudflare会要求您确认构建配置。**这是最关键的一步**，请确保信息填写无误：
+在相关联的cloudflare pages里导入现有 Git 存储库，在设置页面，Cloudflare会要求您确认构建配置。**这是最关键的一步**，请确保信息填写无误：
 
 * **构建命令 (Build command):**
     ```
