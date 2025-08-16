@@ -22,6 +22,7 @@ export class Scene extends Container {
     private action: ButtonEntity;
     private yesButton: ButtonEntity;
     private noButton: ButtonEntity;
+    private fullScreenButton: ButtonEntity;
     private act: () => void;
     private yesAct: () => void;
     private noAct: () => void;
@@ -59,6 +60,7 @@ export class Scene extends Container {
         this.action = new ButtonEntity(game, '投骰', 800 - 100 - 10, 360, 200, 55, () => this.buttonPress(), game.audio, 20);
         this.yesButton = new ButtonEntity(game, '', 800 - 70 - 10, 360, 140, 55, () => this.answer(true), game.audio, 20);
         this.noButton = new ButtonEntity(game, '', 800 - 70 * 3 - 10 * 2, 360, 140, 55, () => this.answer(false), game.audio, 20);
+        this.fullScreenButton = new ButtonEntity(game, '[ ]', 10 + 27, 360, 55, 55, () => this.game.goFullScreen(), game.audio, 20);
 
         this.yesButton.visible = false;
         this.noButton.visible = false;
@@ -86,6 +88,7 @@ export class Scene extends Container {
 
         game.onKey((e) => {
             if (e.key == 'm') this.game.audio.toggleMute();
+            if (e.key == 'f') this.game.goFullScreen();
         });
     }
 
@@ -533,7 +536,7 @@ export class Scene extends Container {
     }
 
     public getButtons(): ButtonEntity[] {
-        return [this.action, this.yesButton, this.noButton];
+        return [this.action, this.yesButton, this.noButton, this.fullScreenButton];
     }
 
     public update(tick: number, mouse: Mouse): void {
