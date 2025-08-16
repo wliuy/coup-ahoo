@@ -53,10 +53,10 @@ export class Scene extends Container {
 
         this.animationSpeed = 0.002;
 
-        this.splash = new WobblyText(game, 'Lets start by rolling for your cargo!', 35, 400, 60, 0.2, 3, { shadow: 4, align: 'center', scales: true });
+        this.splash = new WobblyText(game, '让我们先投骰子决定你的货物！', 35, 400, 60, 0.2, 3, { shadow: 4, align: 'center', scales: true });
         this.secondLine = new WobblyText(game, '', 25, 400, 105, 0.2, 3, { shadow: 3, align: 'center', scales: true });
-        this.bigText = new WobblyText(game, '~ COUP AHOO ~', 80, 400, 150, 0.2, 3, { shadow: 6, align: 'center', scales: true });
-        this.action = new ButtonEntity(game, 'ROLL', 800 - 100 - 10, 360, 200, 55, () => this.buttonPress(), game.audio, 20);
+        this.bigText = new WobblyText(game, '~ 阿胡起义 ~', 80, 400, 150, 0.2, 3, { shadow: 6, align: 'center', scales: true });
+        this.action = new ButtonEntity(game, '投骰', 800 - 100 - 10, 360, 200, 55, () => this.buttonPress(), game.audio, 20);
         this.yesButton = new ButtonEntity(game, '', 800 - 70 - 10, 360, 140, 55, () => this.answer(true), game.audio, 20);
         this.noButton = new ButtonEntity(game, '', 800 - 70 * 3 - 10 * 2, 360, 140, 55, () => this.answer(false), game.audio, 20);
         // this.fullScreenButton = new ButtonEntity(game, '[ ]', 10 + 27, 360, 55, 55, () => this.goFullScreen(), game.audio, 20);
@@ -64,9 +64,9 @@ export class Scene extends Container {
         this.yesButton.visible = false;
         this.noButton.visible = false;
 
-        this.promptAction('ROLL', () => {
+        this.promptAction('投骰', () => {
             this.rollForCargo();
-            setTimeout(() => this.promptAnswerWith('ROLL', 'KEEP', 'Cast the dice once more?', '', () => {
+            setTimeout(() => this.promptAnswerWith('重投', '保留', '要再投一次吗？', '', () => {
                 this.reroll();
                 setTimeout(() => {
                     this.moveDiceTo(this.ship);
@@ -166,7 +166,7 @@ export class Scene extends Container {
     }
 
     private promptAnswer(first: string, second: string, yes: () => void, no: () => void): void {
-        this.promptAnswerWith('YEAH', 'NOPE', first, second, yes, no);
+        this.promptAnswerWith('好的', '不了', first, second, yes, no);
     }
 
     private buttonPress(): void {
@@ -178,13 +178,13 @@ export class Scene extends Container {
     private rollForDamage(): void {
         this.useDamageDice = true;
         this.roll(this.current.getDiceCount());
-        setTimeout(() => this.promptForReroll('Would you like to roll again?', `The total is ${this.getDamage()}...`, () => this.shoot()), 500);
+        setTimeout(() => this.promptForReroll('您想重投一次吗？', `总点数是 ${this.getDamage()}...`, () => this.shoot()), 500);
     }
 
     private rerollOrAct(first: string, second: string, after: () => void): void {
         if (this.current.has('navigator') && !this.extraRerollUsed) {
             this.extraRerollUsed = true;
-            this.promptForReroll(first, this.loot.length > 0 ? second : `The total is ${this.getDamage()}...`, after);
+            this.promptForReroll(first, this.loot.length > 0 ? second : `总点数是 ${this.getDamage()}...`, after);
             return;
         }
         after();
@@ -202,7 +202,7 @@ export class Scene extends Container {
             after();
             return;
         }
-        this.promptAnswerWith('ROLL', 'KEEP', first, second, () => {
+        this.promptAnswerWith('重投', '保留', first, second, () => {
             this.reroll();
             setTimeout(() => this.rerollOrAct(first, second, after), 750);
         }, () => {
@@ -219,10 +219,10 @@ export class Scene extends Container {
         if (dmg == 13 || dmg == 0) {
             this.nextTurn();
             return;
-        } 
+        }
         if (this.current.opponent.player && this.current.opponent.getDiceCount() > 1) {
             this.game.audio.incoming();
-            this.info(`Incoming ${dmg} damage!`, 'Select cargo taking the hit...');
+            this.info(`${dmg}点伤害来袭！`, '请选择一个货物来承受伤害...');
             this.ship.addDamage(dmg);
             return;
         }
@@ -236,7 +236,7 @@ export class Scene extends Container {
         this.info();
         
         setTimeout(() => {
-            this.info('Cast the dice once more?');
+            this.info('要再投一次吗？');
             this.yesButton.visible = true;
             this.noButton.visible = true;
         }, 500);
@@ -260,7 +260,7 @@ export class Scene extends Container {
 
             setTimeout(() => {
                 this.game.audio.win();
-                this.promptForReroll('Victory! Nicely done!', 'Would you like to reroll the loot?', () => {
+                this.promptForReroll('胜利！干得漂亮！', '要重投战利品吗？', () => {
                     this.promptSail();
                     this.showGreed();
                 });
@@ -302,7 +302,7 @@ export class Scene extends Container {
     }
 
     private showGreed(): void {
-        this.info('Don\'t be greedy!', 'You can only take one...');
+        this.info('别太贪心！', '只能拿一个战利品...');
     }
 
     public info(first: string = '', second: string = '', big: string = ''): void {
@@ -314,7 +314,7 @@ export class Scene extends Container {
     }
 
     private promptSail(): void {
-        this.promptAction('SET SAIL', () => this.nextLevel());
+        this.promptAction('扬帆起航', () => this.nextLevel());
     }
 
     private getDamage(): number {
@@ -328,8 +328,8 @@ export class Scene extends Container {
             this.ship.pose(false);
             this.enemy.pose(true);
             this.game.pitcher.pitchTo(0, 5);
-            this.info('Down to Davy Jones\' Locker...', '', 'GAME OVER');
-            this.promptAction('TRY AGAIN?', () => this.restart());
+            this.info('你被送去喂鱼了...', '', '游戏结束');
+            this.promptAction('再试一次？', () => this.restart());
             setTimeout(() => this.ship.sink(), 100);
             return;
         }
@@ -337,7 +337,7 @@ export class Scene extends Container {
             setTimeout(() => this.rollForDamage(), 1000);
             return;
         }
-        this.promptAction('SHOOT', () => this.rollForDamage());
+        this.promptAction('开火', () => this.rollForDamage());
         this.current.pose(true);
     }
 
@@ -394,10 +394,10 @@ export class Scene extends Container {
                     // this.cam.pan.y = -50;
                     this.zoom();
                     this.ship.addCrown();
-                    this.ship.setName('WIN');
+                    this.ship.setName('赢家');
                     this.ship.pose(true);
                     this.game.audio.win();
-                    this.info('You\'ve defeated the whole 13th fleet!', '', 'THE END?');
+                    this.info('你击败了整支第13舰队！', '', '剧终？');
                     this.promptSail();
                 }, 1000);
                 return;
@@ -411,7 +411,7 @@ export class Scene extends Container {
                         this.game.audio.greet();
                         this.enemy?.hop();
                         this.promptSail();
-                        this.info('Ahoy mate! Interested in trade?', hasSpice ? 'I\'ll give you fresh cargo for your spice...' : 'Looks like you don\'t have any spice though...');
+                        this.info('嘿，朋友！想做个交易吗？', hasSpice ? '我可以用新货物换你的香料...' : '但你好像没有任何香料...');
                         if (hasSpice) {
                             this.ship.allowSpicePick();
                             this.trading = true;
@@ -423,7 +423,7 @@ export class Scene extends Container {
                     setTimeout(() => {
                         this.game.audio.greet();
                         this.enemy?.hop();
-                        this.promptAnswerWith('ROLL', 'KEEP', 'Hello there mate!', 'Would you like to reroll all your cargo?', () => {
+                        this.promptAnswerWith('重投', '保留', '你好啊，朋友！', '想重投你所有的货物吗？', () => {
                             this.ship.rerollAll();
                             this.thank();
                         }, () => this.decline());
@@ -433,7 +433,7 @@ export class Scene extends Container {
                 case 2: {
                     this.enemy.hidden = true;
                     this.promptSail();
-                    this.info('Free cargo floating in the drink!', 'A vessel must have sunken here...');
+                    this.info('海面上漂着一些无主之物！', '肯定有艘船在这儿沉了...');
                     this.addLoot();
                     break;
                 }
@@ -442,7 +442,7 @@ export class Scene extends Container {
                     setTimeout(() => {
                         this.game.audio.greet();
                         this.enemy?.hop();
-                        this.promptAnswer('Ahoy! I could plate one of your cargo!', 'It\'ll only be able to receive 1 damage at a time....', () => {
+                        this.promptAnswer('嘿！我可以为你的一个货物包上铁皮！', '这样它每次最多只会受到1点伤害...', () => {
                             this.ship.addPlate();
                             this.thank();
                         }, () => this.decline());
@@ -457,7 +457,7 @@ export class Scene extends Container {
                     setTimeout(() => {
                         this.game.audio.greet();
                         this.enemy?.hop();
-                        this.promptAnswer(`Oi! Want to hire this ${crew.crewRole}?`, crew.getRoleDescription(), () => {
+                        this.promptAnswer(`喂！想雇用这位${crew.crewRole}吗？`, crew.getRoleDescription(), () => {
                             this.enemy.removeCrew();
                             this.ship.addCrew(crew.clone());
                             this.thank();
@@ -475,8 +475,8 @@ export class Scene extends Container {
 
         this.enemy.dude.face.angry = true;
         setTimeout(() => {
-            this.info('Man the cannons! Battle stations!', 'There\'s no parley in sight...');
-            this.enemy.talk(randomCell(['FILTHY RAT', 'HOW DARE YOU', 'YOU TRAITOR', 'LAND LUBBER']));
+            this.info('准备开炮！进入战斗状态！', '看来没得谈判了...');
+            this.enemy.talk(randomCell(['肮脏的老鼠', '你好大的胆子', '你这个叛徒', '旱鸭子']));
             this.game.audio.warn();
         }, 1000);
         setTimeout(() => this.promptShot(), 2000);
@@ -493,7 +493,7 @@ export class Scene extends Container {
 
     private thank(): void {
         this.enemy.openMouth();
-        this.info('All aboard, you\'re good to go!', 'May that steer you true...');
+        this.info('一切就绪，你可以出发了！', '愿它能为你指引正确的航向...');
         setTimeout(() => this.npcLeave(), 500);
     }
 
@@ -504,7 +504,7 @@ export class Scene extends Container {
 
     private decline(): void {
         this.enemy.openMouth();
-        this.info('Aye, all set!', 'Fair winds on your voyage...');
+        this.info('嗯，都搞定了！', '祝你航行一路顺风...');
         // "May the tides be ever in your favor..."
         // "Safe travels on the open seas..."
         this.npcLeave();
