@@ -43,7 +43,6 @@ document.onmousemove = (e: MouseEvent) => {
     mouse.y = isFull ? (e.offsetY - y) / ratio : e.offsetY;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 document.onkeydown = (e: KeyboardEvent) => {
     audio.play();
     game.pressed(e);
@@ -53,10 +52,21 @@ document.onmousedown = () => {
     audio.play();
     mouse.pressing = true;
     game.click(mouse);
-    // setTimeout(() => mouse.x = -999, 100);
 };
 
-// document.onmouseup = () => mouse.pressing = false;
+// ** 新增的全屏逻辑 **
+canvas.addEventListener('click', () => {
+    if (game) {
+        game.goFullScreen();
+    }
+});
+
+canvas.addEventListener('touchend', () => {
+    if (game) {
+        game.goFullScreen();
+    }
+});
+// ** 新增的全屏逻辑结束 **
 
 const tick = (t: number) => {
     requestAnimationFrame(tick);
