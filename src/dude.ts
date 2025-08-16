@@ -49,6 +49,20 @@ export class Dude extends Entity {
         }
     }
 
+    public setRolePosition(): void {
+        switch (this.crewRole) {
+            case 'cannoneer':
+                this.p = { x: 170, y: -170 };
+                break;
+            case 'quartermaster':
+                this.p = { x: -80, y: -100 };
+                break;
+            case 'navigator':
+                this.p = { x: 0, y: -400 };
+                break;
+        }
+    }
+
     public clone(): Dude {
         const copy = new Dude(this.game, 0, 0, this.mainColor, this.secondaryColor, null);
         copy.crewRole = this.crewRole;
