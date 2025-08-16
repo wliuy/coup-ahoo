@@ -9,6 +9,7 @@ import { Camera } from './engine/camera';
 import { offset } from './engine/vector';
 import { Ball } from './ball';
 import { randomCell, randomInt, randomSorter } from './engine/random';
+import { CrewRole } from './dude';
 
 const END_LEVEL = 13 * 2;
 
@@ -21,7 +22,6 @@ export class Scene extends Container {
     private action: ButtonEntity;
     private yesButton: ButtonEntity;
     private noButton: ButtonEntity;
-    // private fullScreenButton: ButtonEntity;
     private act: () => void;
     private yesAct: () => void;
     private noAct: () => void;
@@ -59,7 +59,6 @@ export class Scene extends Container {
         this.action = new ButtonEntity(game, '投骰', 800 - 100 - 10, 360, 200, 55, () => this.buttonPress(), game.audio, 20);
         this.yesButton = new ButtonEntity(game, '', 800 - 70 - 10, 360, 140, 55, () => this.answer(true), game.audio, 20);
         this.noButton = new ButtonEntity(game, '', 800 - 70 * 3 - 10 * 2, 360, 140, 55, () => this.answer(false), game.audio, 20);
-        // this.fullScreenButton = new ButtonEntity(game, '[ ]', 10 + 27, 360, 55, 55, () => this.goFullScreen(), game.audio, 20);
 
         this.yesButton.visible = false;
         this.noButton.visible = false;
@@ -87,47 +86,21 @@ export class Scene extends Container {
 
         game.onKey((e) => {
             if (e.key == 'm') this.game.audio.toggleMute();
-            // if (e.key == 'f') this.game.goFullScreen();
-            // dev keys
-            // if (e.key == 'w') this.triggerWin();
-            // if (e.key == 'a') this.ship.addDice(new Dice(this.game, 0, 0, false));
-            // if (e.key == 'e') this.enemy.addDice(new Dice(this.game, 0, 0, false));
-            // if (e.key == 'v') this.doEvent();
-            // if (e.key == 'f') this.ship.tryRepair();
-            // if (e.key == 'z') this.zoom();
-            // if (e.key == 's') this.nextLevel();
-            // if (e.key == 'l') this.current.badLuck();
-            // if (e.key == 'd') this.ship.hurt(1);
-            // if (e.key == 'j') this.ship.hop();
-            // if (e.key == 'k') this.ship.sink();
-            // if (e.key == 'p') this.game.pitcher.pitchTo(0, 5);
-            // if (e.key == 'R') this.restart();
-            // if (e.key == 'x') this.ship.shoot(1);
-            // if (e.key == 'p') this.ship.pose(true);
-            // if (e.key == 'h') this.game.camera.shake(10, 0.15, 1);
-            // if (e.key == 'c') {
-            //     const crew = this.ship.createCrew(-70, -100);
-            //     crew.crewRole = this.ship.getAvailableRole();
-            //     this.ship.addCrew(crew.clone());
-            // }
-            // if (e.key == 'C') {
-            //     const crew = this.enemy.createCrew(-70, -100);
-            //     crew.crewRole = this.enemy.getAvailableRole();
-            //     this.enemy.addCrew(crew.clone());
-            // }
         });
     }
 
-    // private goFullScreen(): void {
-    //     this.fullScreenButton.visible = false;
-    //     this.game.goFullScreen();
-    // }
+    private translateRole(role: CrewRole): string {
+        switch (role) {
+            case 'cannoneer': return '炮手';
+            case 'quartermaster': return '舵手';
+            case 'navigator': return '领航员';
+        }
+    }
 
     public restart(): void {
         this.game.pitcher.pitchFrom(0.2);
         this.game.pitcher.pitchTo(1, 5);
         this.game.audio.setVolume(0.7);
-        // this.game.scene = null;
         this.game.changeScene(new Scene(this.game));
     }
 
@@ -230,7 +203,6 @@ export class Scene extends Container {
     }
 
     private rollForCargo(): void {
-        // this.fullScreenButton.visible = false;
         this.roll(2, -80, -40);
         this.action.visible = false;
         this.info();
@@ -283,7 +255,6 @@ export class Scene extends Container {
     }
 
     private addLoot(): void {
-        // const m = this.getMid() + (80 + this.cam.shift + 200) / this.cam.zoom + offset;
         const m = this.enemy.p.x - 100;
         const amt = Math.min(this.level + 1, 6);
         this.loot = [];
@@ -389,9 +360,6 @@ export class Scene extends Container {
             if (this.level === END_LEVEL) {
                 this.enemy.hidden = true;
                 setTimeout(() => {
-                    // this.targetZoom = 0.75;
-                    // this.cam.shift = 0;
-                    // this.cam.pan.y = -50;
                     this.zoom();
                     this.ship.addCrown();
                     this.ship.setName('赢家');
@@ -411,7 +379,7 @@ export class Scene extends Container {
                         this.game.audio.greet();
                         this.enemy?.hop();
                         this.promptSail();
-                        this.info('嘿，朋友！想做个交易吗？', hasSpice ? '我可以用新货物换你的香料...' : '但你好像没有任何香料...');
+                        this.info('嘿，朋友！想做个交易吗？', hasSpice ? '我可以用新货物换你的黄金骰子...' : '但你好像没有任何黄金骰子...');
                         if (hasSpice) {
                             this.ship.allowSpicePick();
                             this.trading = true;
@@ -457,7 +425,7 @@ export class Scene extends Container {
                     setTimeout(() => {
                         this.game.audio.greet();
                         this.enemy?.hop();
-                        this.promptAnswer(`喂！想雇用这位${crew.crewRole}吗？`, crew.getRoleDescription(), () => {
+                        this.promptAnswer(`喂！想雇用这位${this.translateRole(crew.crewRole)}吗？`, crew.getRoleDescription(), () => {
                             this.enemy.removeCrew();
                             this.ship.addCrew(crew.clone());
                             this.thank();
@@ -505,8 +473,6 @@ export class Scene extends Container {
     private decline(): void {
         this.enemy.openMouth();
         this.info('嗯，都搞定了！', '祝你航行一路顺风...');
-        // "May the tides be ever in your favor..."
-        // "Safe travels on the open seas..."
         this.npcLeave();
     }
 
@@ -552,7 +518,6 @@ export class Scene extends Container {
         this.dice = [];
         for (let i = 0; i < amount; i++) {
             if (i > 0 && i % perRow == 0) row++;
-            // const m = this.getMid() + (70 + this.cam.shift) / this.cam.zoom;
             const m = this.current.getRollPos();
             const d = new Dice(this.game, m, 800, this.useDamageDice);
             d.roll(m + offX + i * 120 - 120 * (Math.min(amount - 1, perRow) * 0.5) - 120 * perRow * Math.floor(i / perRow), 450 + row * 120 + offY);
@@ -568,7 +533,6 @@ export class Scene extends Container {
     }
 
     public getButtons(): ButtonEntity[] {
-        // return [this.action, this.yesButton, this.noButton, this.fullScreenButton];
         return [this.action, this.yesButton, this.noButton];
     }
 
@@ -626,11 +590,9 @@ export class Scene extends Container {
         }
 
         // clouds
-        // ctx.globalCompositeOperation = 'overlay';
         this.clouds.forEach(c => {
             ctx.lineWidth = 100 * c.scale;
             ctx.setLineDash([0, 80 * c.scale]);
-            // ctx.lineDashOffset = Math.sin(c.x * 0.001) * 100;
             ctx.beginPath();
             ctx.strokeStyle = '#ffffff22';
             ctx.ellipse(c.x, c.y, 140 * c.scale, 30 * c.scale, 0, 0, Math.PI * 2);
@@ -639,7 +601,6 @@ export class Scene extends Container {
             if (c.x < this.cam.pan.x - 1000) c.x = this.cam.pan.x + 2500 + Math.random() * 1000;
         });
 
-        // ctx.globalCompositeOperation = 'source-over';
         ctx.setLineDash([]);
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 7;
@@ -653,7 +614,6 @@ export class Scene extends Container {
         // water
         ctx.strokeStyle = '#ffffffbb';
         ctx.fillStyle = '#03fcf477';
-        // ctx.globalCompositeOperation = 'lighter';
         ctx.beginPath();
         ctx.moveTo(start + 3000, 2000);
         ctx.lineTo(start, 2000);
@@ -664,7 +624,6 @@ export class Scene extends Container {
         }
         ctx.fill();
         ctx.stroke();
-        // ctx.globalCompositeOperation = 'source-over';
 
         [...this.dice, ...this.getChildren()].forEach(e => e.draw(ctx));
 
