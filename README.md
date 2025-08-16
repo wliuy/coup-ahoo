@@ -10,31 +10,22 @@
 
 ### 第 1 步：开始部署
 
-点击下面的按钮，Cloudflare会引导您授权并创建这个游戏项目的副本：
+点击下面的按钮，它会带您进入 **Cloudflare Pages** 的正确创建流程，并尝试预填您的项目信息：
 
-[![使用 Cloudflare 进行部署](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/deploy?repo=https://github.com/wliuy/coup-ahoo)
+[![部署到 Cloudflare Pages](https://static.cloudflareinsights.com/pages/media/pages-button.svg)](https://dash.cloudflare.com/pages/new/wliuy/coup-ahoo)
 
 ### 第 2 步：配置构建
 
-在设置页面，Cloudflare会要求您确认构建配置。**这是最关键的一步**，请对照下图，确保信息填写无误：
+在设置页面，Cloudflare会要求您确认构建配置。**这是最关键的一步**，请确保信息填写无误：
 
-```
-┌───────────────────────────────────────────────────┐
-|    构建和部署 (Build & deployments)                  |
-|───────────────────────────────────────────────────|
-|                                                   |
-|  构建命令 (Build command)                           |
-|  ┌──────────────────────────────────────────────┐ |
-|  │ npm run build                                │ |
-|  └──────────────────────────────────────────────┘ |
-|                                                   |
-|  构建输出目录 (Build output directory)                |
-|  ┌──────────────────────────────────────────────┐ |
-|  │ dist                                         │ |
-|  └──────────────────────────────────────────────┘ |
-|                                                   |
-└───────────────────────────────────────────────────┘
-```
+* **构建命令 (Build command):**
+    ```
+    npm run build
+    ```
+* **构建输出目录 (Build output directory):**
+    ```
+    dist
+    ```
 
 ### 第 3 步：完成
 
@@ -42,8 +33,6 @@
 
 稍等片刻，Cloudflare完成构建后，您的游戏就成功上线了！
 
-> **为什么需要手动配置？**
-> 对于没有使用标准框架（如React, Vue等）的自定义项目，Cloudflare需要您手动确认一次构建设置。完成这个简单的步骤后，未来您对代码仓库的所有更新都将是全自动部署的。
 
 ## 游戏简介
 
