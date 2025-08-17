@@ -264,7 +264,7 @@ export class Scene extends Container {
     }
 
     private addLoot(): void {
-        const m = this.enemy.p.x - 100;
+        const m = 400;
         const amt = Math.min(this.level + 1, 6);
         this.loot = [];
         for (let i = 0; i < amt; i++) {
@@ -525,13 +525,27 @@ export class Scene extends Container {
     public roll(amount: number, offX: number = 0, offY: number = 0): void {
         this.current.openMouth();
         const perRow = 9;
+        
+        // ** 新增：根据骰子数量动态计算间距和缩放 **
+        const diceInRow = Math.min(amount, perRow);
+        // 当一行骰子超过6个时开始缩小
+        const scale = Math.min(1, 6 / diceInRow); 
+        const spacing = 120 * scale;
+
         let row = 0;
         this.dice = [];
         for (let i = 0; i < amount; i++) {
             if (i > 0 && i % perRow == 0) row++;
             const m = this.current.getRollPos();
             const d = new Dice(this.game, m, 800, this.useDamageDice);
-            d.roll(m + offX + i * 120 - 120 * (Math.min(amount - 1, perRow) * 0.5) - 120 * perRow * Math.floor(i / perRow), 450 + row * 120 + offY);
+            
+            // 将计算出的缩放值附加到骰子对象上，以便绘制时使用
+            (d as any).renderScale = scale;
+            
+            const xPos = m + offX + (i % perRow) * spacing - spacing * (Math.min(amount, perRow) - 1) * 0.5;
+            const yPos = 450 + row * 120 + offY;
+            d.roll(xPos, yPos);
+            
             this.dice.push(d);
         }
         this.checkForBlankRepair();
@@ -619,7 +633,22 @@ export class Scene extends Container {
         this.enemy?.draw(ctx);
         this.ship.draw(ctx);
         this.ball.draw(ctx);
-
+        
+        // ** 新增：在绘制时应用缩放 **
+        this.dice.forEach(d => {
+            const scale = (d as any).renderScale || 1;
+            if (scale !== 1) {
+                ctx.save();
+                ctx.translate(d.p.x, d.p.y);
+                ctx.scale(scale, scale);
+                ctx.translate(-d.p.x, -d.p.y);
+                d.draw(ctx);
+                ctx.restore();
+            } else {
+                d.draw(ctx);
+            }
+        });
+        
         this.loot.forEach(l => l.draw(ctx));
 
         // water
@@ -636,7 +665,7 @@ export class Scene extends Container {
         ctx.fill();
         ctx.stroke();
 
-        [...this.dice, ...this.getChildren()].forEach(e => e.draw(ctx));
+        [...this.getChildren()].forEach(e => e.draw(ctx));
 
         if (this.mp) {
             const p = new DOMPoint(this.mp.x, this.mp.y).matrixTransform(ctx.getTransform().inverse());
