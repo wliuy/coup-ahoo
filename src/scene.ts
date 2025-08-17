@@ -53,9 +53,10 @@ export class Scene extends Container {
 
         this.animationSpeed = 0.002;
 
-        this.splash = new WobblyText(game, '让我们先投骰子决定你的货物！', 35, 400, 60, 0.2, 3, { shadow: 4, align: 'center', scales: true });
-        this.secondLine = new WobblyText(game, '', 25, 400, 105, 0.2, 3, { shadow: 3, align: 'center', scales: true });
-        this.bigText = new WobblyText(game, '~ 阿胡起义 ~', 80, 400, 150, 0.2, 3, { shadow: 6, align: 'center', scales: true });
+        // ** 修改：初始界面显示核心玩法 **
+        this.splash = new WobblyText(game, '骰子即是生命与力量', 35, 400, 120, 0.2, 3, { shadow: 4, align: 'center', scales: true });
+        this.secondLine = new WobblyText(game, '征服船员 & 避开“13”', 25, 400, 175, 0.2, 3, { shadow: 3, align: 'center', scales: true });
+        this.bigText = new WobblyText(game, '~ Ahoo起义 ~', 80, 400, 60, 0.2, 3, { shadow: 6, align: 'center', scales: true });
         
         const btnWidth = 160;
         const btnHeight = 45;
@@ -63,7 +64,7 @@ export class Scene extends Container {
         const btnMargin = 10;
         const btnBottom = 400 - btnHeight * 0.5 - btnMargin;
 
-        this.action = new ButtonEntity(game, '投骰', 800 - btnWidth * 0.5 - btnMargin, btnBottom, btnWidth, btnHeight, () => this.buttonPress(), game.audio, btnFontSize);
+        this.action = new ButtonEntity(game, '开始游戏', 800 - btnWidth * 0.5 - btnMargin, btnBottom, btnWidth, btnHeight, () => this.buttonPress(), game.audio, btnFontSize);
         
         const smallBtnWidth = 110;
         this.yesButton = new ButtonEntity(game, '', 800 - smallBtnWidth * 0.5 - btnMargin, btnBottom, smallBtnWidth, btnHeight, () => this.answer(true), game.audio, btnFontSize);
@@ -72,18 +73,26 @@ export class Scene extends Container {
         this.yesButton.visible = false;
         this.noButton.visible = false;
 
-        this.promptAction('投骰', () => {
-            this.rollForCargo();
-            setTimeout(() => this.promptAnswerWith('重投', '保留', '要再投一次吗？', '', () => {
-                this.reroll();
-                setTimeout(() => {
+        // ** 修改：点击“开始游戏”后才进入正式流程 **
+        this.promptAction('开始游戏', () => {
+            // 清空规则说明，换成游戏流程的第一个提示
+            this.info('让我们先投骰子决定你的货物！', '');
+            this.bigText.toggle(''); // 清空大标题
+
+            // 进入投骰子流程
+            this.promptAction('投骰', () => {
+                this.rollForCargo();
+                setTimeout(() => this.promptAnswerWith('重投', '保留', '要再投一次吗？', '', () => {
+                    this.reroll();
+                    setTimeout(() => {
+                        this.moveDiceTo(this.ship);
+                        this.promptSail();
+                    }, 500);
+                }, () => {
                     this.moveDiceTo(this.ship);
                     this.promptSail();
-                }, 500);
-            }, () => {
-                this.moveDiceTo(this.ship);
-                this.promptSail();
-            }), 500);
+                }), 500);
+            });
         });
 
         this.cam = game.camera;
@@ -269,7 +278,6 @@ export class Scene extends Container {
         this.loot = [];
         for (let i = 0; i < amt; i++) {
             const d = new Dice(this.game, m, 300);
-            // ** 在这里修正战利品骰子的Y坐标 (从420改为350) **
             d.roll(m + i * 120 - 120 * ((amt - 1) * 0.5), 350);
             d.float(true);
             d.allowPick(true);
@@ -532,7 +540,6 @@ export class Scene extends Container {
             if (i > 0 && i % perRow == 0) row++;
             const m = this.current.getRollPos();
             const d = new Dice(this.game, m, 800, this.useDamageDice);
-            // ** 在这里也修正战斗骰子的Y坐标 (从450改为380) **
             d.roll(m + offX + i * 120 - 120 * (Math.min(amount - 1, perRow) * 0.5) - 120 * perRow * Math.floor(i / perRow), 380 + row * 120 + offY);
             this.dice.push(d);
         }
