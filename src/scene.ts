@@ -264,8 +264,7 @@ export class Scene extends Container {
     }
 
     private addLoot(): void {
-        // const m = this.enemy.p.x - 100; // 旧的、靠右的中心点
-        const m = 400; // ** 新的中心点，基于屏幕中心 (800 / 2) **
+        const m = this.enemy.p.x - 100;
         const amt = Math.min(this.level + 1, 6);
         this.loot = [];
         for (let i = 0; i < amt; i++) {
