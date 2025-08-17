@@ -43,6 +43,12 @@ export class Scene extends Container {
     private extraRerollUsed: boolean;
     private clouds: { x: number, y: number, scale: number, speed: number }[];
 
+    // --- 新增代码 ---
+    private tipTitle: WobblyText;
+    private tipLine1: WobblyText;
+    private tipLine2: WobblyText;
+    // --- 新增代码结束 ---
+
     constructor(game: Game) {
         super(game, 0, 0, []);
 
@@ -56,6 +62,12 @@ export class Scene extends Container {
         this.splash = new WobblyText(game, '让我们先投骰子决定你的货物！', 35, 400, 60, 0.2, 3, { shadow: 4, align: 'center', scales: true });
         this.secondLine = new WobblyText(game, '', 25, 400, 105, 0.2, 3, { shadow: 3, align: 'center', scales: true });
         this.bigText = new WobblyText(game, '~ 阿胡起义 ~', 80, 400, 150, 0.2, 3, { shadow: 6, align: 'center', scales: true });
+        
+        // --- 新增代码：初始化提示文本 ---
+        this.tipTitle = new WobblyText(game, '玩法提示', 40, 400, 240, 0.2, 3, { shadow: 4, align: 'center', scales: true });
+        this.tipLine1 = new WobblyText(game, '1. 骰子即是生命与力量', 25, 400, 290, 0.2, 3, { shadow: 3, align: 'center', scales: true });
+        this.tipLine2 = new WobblyText(game, '2. 征服船员 避开“13”', 25, 400, 330, 0.2, 3, { shadow: 3, align: 'center', scales: true });
+        // --- 新增代码结束 ---
         
         const btnWidth = 160;
         const btnHeight = 45;
@@ -72,19 +84,39 @@ export class Scene extends Container {
         this.yesButton.visible = false;
         this.noButton.visible = false;
 
-        this.promptAction('投骰', () => {
-            this.rollForCargo();
-            setTimeout(() => this.promptAnswerWith('重投', '保留', '要再投一次吗？', '', () => {
-                this.reroll();
-                setTimeout(() => {
+        // --- 修改后的代码：更改游戏启动流程 ---
+        
+        // 初始时先隐藏游戏标题和第一行文字，只显示提示
+        this.splash.toggle(false);
+        this.bigText.toggle(false);
+
+        // 1. 首先显示提示和确认按钮
+        this.promptAction('我明白了', () => {
+            // 2. 当玩家点击确认后，隐藏提示
+            this.tipTitle.toggle(false);
+            this.tipLine1.toggle(false);
+            this.tipLine2.toggle(false);
+            
+            // 恢复显示原来的游戏标题和提示
+            this.splash.toggle('让我们先投骰子决定你的货物！');
+            this.bigText.toggle('~ 阿胡起义 ~');
+            
+            // 3. 执行原本的游戏开始逻辑
+            this.promptAction('投骰', () => {
+                this.rollForCargo();
+                setTimeout(() => this.promptAnswerWith('重投', '保留', '要再投一次吗？', '', () => {
+                    this.reroll();
+                    setTimeout(() => {
+                        this.moveDiceTo(this.ship);
+                        this.promptSail();
+                    }, 500);
+                }, () => {
                     this.moveDiceTo(this.ship);
                     this.promptSail();
-                }, 500);
-            }, () => {
-                this.moveDiceTo(this.ship);
-                this.promptSail();
-            }), 500);
+                }), 500);
+            });
         });
+        // --- 修改后的代码结束 ---
 
         this.cam = game.camera;
         this.cam.zoom = this.targetZoom;
@@ -552,7 +584,9 @@ export class Scene extends Container {
         if (this.delta > 1000) return;
         this.wave = Math.sin(tick * 0.0003);
         this.fastWave = Math.sin(tick * 0.0007);
-        [this.ball, this.ship, this.enemy, ...this.dice, this.splash, this.secondLine, this.bigText, ...this.getButtons()].filter(e => !!e).forEach(e => e.update(tick, mouse));
+        // --- 修改后的代码 ---
+        [this.ball, this.ship, this.enemy, ...this.dice, this.splash, this.secondLine, this.bigText, this.tipTitle, this.tipLine1, this.tipLine2, ...this.getButtons()].filter(e => !!e).forEach(e => e.update(tick, mouse));
+        // --- 修改后的代码结束 ---
         this.loot.forEach(l => l.update(tick, this.mp));
         this.mp = { ...mouse };
         const diff = this.ship.p.x - this.cam.pan.x - 400 + this.cam.shift * 2;
@@ -645,6 +679,8 @@ export class Scene extends Container {
         
         ctx.resetTransform();
         
-        [this.splash, this.secondLine, this.bigText, ...this.getButtons()].forEach(b => b.draw(ctx));
+        // --- 修改后的代码 ---
+        [this.splash, this.secondLine, this.bigText, this.tipTitle, this.tipLine1, this.tipLine2, ...this.getButtons()].forEach(b => b.draw(ctx));
+        // --- 修改后的代码结束 ---
     }
 }
