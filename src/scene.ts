@@ -61,7 +61,6 @@ export class Scene extends Container {
         const btnHeight = 45;
         const btnFontSize = 24;
         const btnMargin = 10;
-        // ** 在这里修正按钮的Y坐标计算基准 (从450改为400) **
         const btnBottom = 400 - btnHeight * 0.5 - btnMargin;
 
         this.action = new ButtonEntity(game, '投骰', 800 - btnWidth * 0.5 - btnMargin, btnBottom, btnWidth, btnHeight, () => this.buttonPress(), game.audio, btnFontSize);
@@ -242,11 +241,6 @@ export class Scene extends Container {
 
             setTimeout(() => {
                 this.game.audio.win();
-                
-                this.targetZoom = 1.2;
-                this.cam.pan.x = this.enemy.p.x - 100;
-                this.cam.pan.y = 280;
-
                 this.promptForReroll('胜利！干得漂亮！', '要重投战利品吗？', () => {
                     this.promptSail();
                     this.showGreed();
