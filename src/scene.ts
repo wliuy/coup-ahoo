@@ -61,7 +61,8 @@ export class Scene extends Container {
         const btnHeight = 45;
         const btnFontSize = 24;
         const btnMargin = 10;
-        const btnBottom = 450 - btnHeight * 0.5 - btnMargin;
+        // ** 在这里修正按钮的Y坐标计算基准 (从450改为400) **
+        const btnBottom = 400 - btnHeight * 0.5 - btnMargin;
 
         this.action = new ButtonEntity(game, '投骰', 800 - btnWidth * 0.5 - btnMargin, btnBottom, btnWidth, btnHeight, () => this.buttonPress(), game.audio, btnFontSize);
         
