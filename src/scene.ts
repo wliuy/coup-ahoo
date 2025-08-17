@@ -104,21 +104,7 @@ export class Scene extends Container {
 
 
 
-        this.animationSpeed = 0.002;
-
-        // ** 修改：初始界面显示核心玩法 **
-        this.splash = new WobblyText(game, '骰子即是生命与力量', 35, 400, 120, 0.2, 3, { shadow: 4, align: 'center', scales: true });
-        this.secondLine = new WobblyText(game, '征服船员 & 避开“13”', 25, 400, 175, 0.2, 3, { shadow: 3, align: 'center', scales: true });
-        this.bigText = new WobblyText(game, '~ Ahoo起义 ~', 80, 400, 60, 0.2, 3, { shadow: 6, align: 'center', scales: true });
-
-
-        this.splash = new WobblyText(game, '让我们先投骰子决定你的货物！', 35, 400, 60, 0.2, 3, { shadow: 4, align: 'center', scales: true });
-
-        this.secondLine = new WobblyText(game, '', 25, 400, 105, 0.2, 3, { shadow: 3, align: 'center', scales: true });
-
-        this.bigText = new WobblyText(game, '~ 阿胡起义 ~', 80, 400, 150, 0.2, 3, { shadow: 6, align: 'center', scales: true });
-
-        
+        this.animationSpeed = 0.002;        
 
         const btnWidth = 160;
 
