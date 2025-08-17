@@ -242,11 +242,9 @@ export class Scene extends Container {
             setTimeout(() => {
                 this.game.audio.win();
                 
-                // ** 新增：镜头聚焦到战利品区域 **
-                this.targetZoom = 1.2; // 放大镜头
-                this.cam.pan.x = this.enemy.p.x - 100; // 镜头中心对准战利品
-                this.cam.pan.y = 280; // 镜头向下移动
-                // ** 结束 **
+                this.targetZoom = 1.2;
+                this.cam.pan.x = this.enemy.p.x - 100;
+                this.cam.pan.y = 280;
 
                 this.promptForReroll('胜利！干得漂亮！', '要重投战利品吗？', () => {
                     this.promptSail();
@@ -338,11 +336,9 @@ export class Scene extends Container {
         this.current = this.ship;
         this.level++;
         
-        // ** 新增：镜头恢复正常 **
         this.targetZoom = 0.75;
         this.cam.shift = 0;
         this.cam.pan.y = -25;
-        // ** 结束 **
 
         this.ship.sail();
         this.ship.openMouth();
@@ -532,7 +528,7 @@ export class Scene extends Container {
     }
 
     public roll(amount: number, offX: number = 0, offY: number = 0): void {
-        this.current.openMmouth();
+        this.current.openMouth();
         const perRow = 9;
         let row = 0;
         this.dice = [];
