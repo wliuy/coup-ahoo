@@ -269,7 +269,7 @@ export class Ship extends Flashable {
                         this.scene.info();
                         setTimeout(() => {
                             this.game.audio.incoming();
-                            this.scene.info(`Another ${this.incoming} damage!`, 'Choose cargo taking the hit...');
+                            this.scene.info(`又来了 ${this.incoming} 点伤害！`, '请再次选择货物承受伤害...'); // <--- 修改在这里
                         }, 750);
                         return;
                     }
