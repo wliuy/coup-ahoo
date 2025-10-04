@@ -41,6 +41,7 @@ export class Scene extends Container {
     private mp: Mouse;
     private prompted: NodeJS.Timeout;
     private extraRerollUsed: boolean;
+    private looting: boolean = false; // <--- 修改点 1: 添加新属性
     private clouds: { x: number, y: number, scale: number, speed: number }[];
 
     constructor(game: Game) {
@@ -328,6 +329,7 @@ export class Scene extends Container {
         this.ship.disablePicking();
         this.won = false;
         this.trading = false;
+        this.looting = false; // <--- 修改点 2: 重置属性
         this.current = this.ship;
         this.level++;
         
@@ -562,9 +564,11 @@ export class Scene extends Container {
         const z = this.targetZoom - this.cam.zoom;
         if (Math.abs(z) > 0.01) this.cam.zoom += Math.sign(z) * 0.0075 * 0.05 * this.delta;
 
-        if (this.loot.length > 0 && mouse.pressing) {
+        // <--- 修改点 3: 整个拾取逻辑
+        if (!this.looting && this.loot.length > 0 && mouse.pressing) {
             const looted = this.loot.find(l => l.isHovering());
             if (looted) {
+                this.looting = true;
                 this.showGreed();
                 this.game.audio.pick();
                 this.yesButton.visible = false;
