@@ -41,7 +41,7 @@ export class Scene extends Container {
     private mp: Mouse;
     private prompted: NodeJS.Timeout;
     private extraRerollUsed: boolean;
-    private looting: boolean = false; // <--- 修改点 1: 添加新属性
+    private looting: boolean = false;
     private clouds: { x: number, y: number, scale: number, speed: number }[];
 
     constructor(game: Game) {
@@ -66,9 +66,15 @@ export class Scene extends Container {
 
         this.action = new ButtonEntity(game, '投骰', 800 - btnWidth * 0.5 - btnMargin, btnBottom, btnWidth, btnHeight, () => this.buttonPress(), game.audio, btnFontSize);
         
+        // --- [修复] 按钮重叠问题 ---
         const smallBtnWidth = 110;
-        this.yesButton = new ButtonEntity(game, '', 800 - smallBtnWidth * 0.5 - btnMargin, btnBottom, smallBtnWidth, btnHeight, () => this.answer(true), game.audio, btnFontSize);
-        this.noButton = new ButtonEntity(game, '', 800 - smallBtnWidth * 1.5 - btnMargin * 2, btnBottom, smallBtnWidth, btnHeight, () => this.answer(false), game.audio, btnFontSize);
+        const screenWidth = 800;
+        const rightButtonX = screenWidth - smallBtnWidth / 2 - btnMargin;
+        const leftButtonX = rightButtonX - smallBtnWidth - btnMargin;
+
+        this.yesButton = new ButtonEntity(game, '', rightButtonX, btnBottom, smallBtnWidth, btnHeight, () => this.answer(true), game.audio, btnFontSize);
+        this.noButton = new ButtonEntity(game, '', leftButtonX, btnBottom, smallBtnWidth, btnHeight, () => this.answer(false), game.audio, btnFontSize);
+        // --- 修复结束 ---
 
         this.yesButton.visible = false;
         this.noButton.visible = false;
@@ -329,7 +335,7 @@ export class Scene extends Container {
         this.ship.disablePicking();
         this.won = false;
         this.trading = false;
-        this.looting = false; // <--- 修改点 2: 重置属性
+        this.looting = false;
         this.current = this.ship;
         this.level++;
         
@@ -564,25 +570,27 @@ export class Scene extends Container {
         const z = this.targetZoom - this.cam.zoom;
         if (Math.abs(z) > 0.01) this.cam.zoom += Math.sign(z) * 0.0075 * 0.05 * this.delta;
 
-        // <--- 修改点 3: 整个拾取逻辑
+        // --- [修复] 敌人消失 (动画冲突) ---
         if (!this.looting && this.loot.length > 0 && mouse.pressing) {
             const looted = this.loot.find(l => l.isHovering());
             if (looted) {
-                this.looting = true;
+                this.looting = true; // 加锁，防止重复拾取
                 this.showGreed();
                 this.game.audio.pick();
                 this.yesButton.visible = false;
                 this.noButton.visible = false;
-                this.loot.forEach(l => l.allowPick(false));
-                looted.float(false);
-                looted.move(offset(this.ship.getDicePos(this.ship.getDiceCount()), this.ship.p.x, this.ship.p.y), () => this.ship.addDice(looted));
-                this.ship.openMouth();
+
+                // 从战利品列表中移除，并通知船去接收它
+                this.loot = this.loot.filter(l => l != looted);
+                this.ship.receiveLoot(looted);
+
+                // 延迟调用扬帆起航的提示
                 setTimeout(() => {
-                    this.loot = this.loot.filter(l => l != looted);
                     this.promptSail();
                 }, 300);
             }
         }
+        // --- 修复结束 ---
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
