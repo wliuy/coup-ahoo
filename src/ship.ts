@@ -200,6 +200,15 @@ export class Ship extends Flashable {
         this.game.scene.add(new Pulse(this.game, x, y, size, 0.15, 0, 150));
     }
 
+    // --- [修复] 敌人消失 (动画冲突) ---
+    public receiveLoot(d: Dice): void {
+        this.openMouth();
+        d.allowPick(false);
+        d.float(false);
+        this.addDice(d); // 使用现有的 addDice 来添加并触发重排动画
+    }
+    // --- 修复结束 ---
+
     public addDice(d: Dice): void {
         this.dice.push(d);
         d.p = this.getDicePos(this.dice.length - 1);
@@ -269,7 +278,7 @@ export class Ship extends Flashable {
                         this.scene.info();
                         setTimeout(() => {
                             this.game.audio.incoming();
-                            this.scene.info(`又来了 ${this.incoming} 点伤害！`, '请再次选择货物承受伤害...'); // <--- 修改在这里
+                            this.scene.info(`又来了 ${this.incoming} 点伤害！`, '请再次选择货物承受伤害...');
                         }, 750);
                         return;
                     }
