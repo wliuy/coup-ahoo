@@ -43,6 +43,9 @@ export class Scene extends Container {
     private extraRerollUsed: boolean;
     private looting: boolean = false;
     private clouds: { x: number, y: number, scale: number, speed: number }[];
+    
+    // --- [最终修复] 添加一个新变量，用于精确判断“刚刚按下”的事件 ---
+    private mouseWasPressed: boolean = false;
 
     constructor(game: Game) {
         super(game, 0, 0, []);
@@ -66,7 +69,6 @@ export class Scene extends Container {
 
         this.action = new ButtonEntity(game, '投骰', 800 - btnWidth * 0.5 - btnMargin, btnBottom, btnWidth, btnHeight, () => this.buttonPress(), game.audio, btnFontSize);
         
-        // --- [修复] 按钮重叠问题 ---
         const smallBtnWidth = 110;
         const screenWidth = 800;
         const rightButtonX = screenWidth - smallBtnWidth / 2 - btnMargin;
@@ -74,7 +76,6 @@ export class Scene extends Container {
 
         this.yesButton = new ButtonEntity(game, '', rightButtonX, btnBottom, smallBtnWidth, btnHeight, () => this.answer(true), game.audio, btnFontSize);
         this.noButton = new ButtonEntity(game, '', leftButtonX, btnBottom, smallBtnWidth, btnHeight, () => this.answer(false), game.audio, btnFontSize);
-        // --- 修复结束 ---
 
         this.yesButton.visible = false;
         this.noButton.visible = false;
@@ -105,6 +106,7 @@ export class Scene extends Container {
         });
     }
 
+    // ... (从 translateRole 到 getButtons 的所有函数保持不变) ...
     private translateRole(role: CrewRole): string {
         switch (role) {
             case 'cannoneer': return '炮手';
@@ -558,6 +560,12 @@ export class Scene extends Container {
     public update(tick: number, mouse: Mouse): void {
         super.update(tick, mouse);
         if (this.delta > 1000) return;
+
+        // --- [最终修复] 新增的、更可靠的触摸判断逻辑 ---
+        const isMouseDown = mouse.pressing;
+        const isMouseJustPressed = isMouseDown && !this.mouseWasPressed;
+        // --- 修复结束 ---
+
         this.wave = Math.sin(tick * 0.0003);
         this.fastWave = Math.sin(tick * 0.0007);
         [this.ball, this.ship, this.enemy, ...this.dice, this.splash, this.secondLine, this.bigText, ...this.getButtons()].filter(e => !!e).forEach(e => e.update(tick, mouse));
@@ -570,27 +578,27 @@ export class Scene extends Container {
         const z = this.targetZoom - this.cam.zoom;
         if (Math.abs(z) > 0.01) this.cam.zoom += Math.sign(z) * 0.0075 * 0.05 * this.delta;
 
-        // --- [修复] 敌人消失 (动画冲突) ---
-        if (!this.looting && this.loot.length > 0 && mouse.pressing) {
+        // --- [最终修复] 使用 isMouseJustPressed 替换 mouse.pressing ---
+        if (!this.looting && this.loot.length > 0 && isMouseJustPressed) {
             const looted = this.loot.find(l => l.isHovering());
             if (looted) {
-                this.looting = true; // 加锁，防止重复拾取
+                this.looting = true;
                 this.showGreed();
                 this.game.audio.pick();
                 this.yesButton.visible = false;
                 this.noButton.visible = false;
 
-                // 从战利品列表中移除，并通知船去接收它
                 this.loot = this.loot.filter(l => l != looted);
                 this.ship.receiveLoot(looted);
 
-                // 延迟调用扬帆起航的提示
                 setTimeout(() => {
                     this.promptSail();
                 }, 300);
             }
         }
-        // --- 修复结束 ---
+        
+        // --- [最终修复] 在 update 函数末尾更新 mouseWasPressed 状态 ---
+        this.mouseWasPressed = isMouseDown;
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
